@@ -1,23 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Column from "./Column";
+import CreateTaskForm from "./CreateTaskForm";
+
+const taskStatuses = [ 'todo', 'progress', 'review', 'done' ];
+
+const initialTasks = [
+  { id: 1, title: 'Task 1', status: 'todo', priority: 1},
+  { id: 2, title: 'Task 2', status: 'progress', priority: 2},
+  { id: 3, title: 'Task 3', status: 'review', priority: 3},
+  { id: 4, title: 'Task 4', status: 'done', priority: 4},
+  { id: 5, title: 'Task 5', status: 'todo', priority: 5}
+];
 
 function App() {
+  const [tasks, setTasks] = useState(initialTasks);
+
+  const onStatusChange = (id, newStatus) => {
+    setTasks(tasks.map((task) => {
+      if(task.id === id) {
+        return {...task, status: newStatus};
+      }
+      return task;
+    }))
+  }
+
+  const onCreateTask = (task) => {
+    setTasks([...tasks, {...task, id: Math.random(), status: 'todo'}])
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <CreateTaskForm onSubmit={onCreateTask} />
+      <div className="row">
+        {taskStatuses.map((status) => (
+          <Column
+            key={status} 
+            status={status} 
+            tasks={tasks}
+            statuses={taskStatuses} 
+            onStatusChange={onStatusChange}
+          />
+        ))}
+      </div>
     </div>
   );
 }
